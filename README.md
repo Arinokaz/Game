@@ -7,7 +7,9 @@
 5. composer install
 
 Команда для выполнения миграций: `php migrations.php`
+
 Команда для выполнения консольных `команд: php console.php`
+
 Команда для выполнения тестов: `./vendor/bin/phpunit`
 
 ---
