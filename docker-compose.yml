@@ -1,0 +1,56 @@
+version: "3.3"
+services:
+
+    php-game:
+        build:
+            context: ./docker/php
+        container_name: php-game
+        working_dir: /var/www
+        networks:
+            - backend
+        ports:
+            - "8085:8085"
+        volumes:
+            - ./${PROJECT_FOLDER}:/var/www/${PROJECT_FOLDER}
+
+    nginx-game:
+        image: nginx:latest
+        container_name: nginx-game
+        networks:
+            - backend
+        ports:
+            - "80:80"
+            - "8080:8080"
+        volumes:
+            - ./${PROJECT_FOLDER}:/var/www/${PROJECT_FOLDER}
+            - ./docker/nginx/conf.d/:/etc/nginx/conf.d/
+        depends_on:
+            - php-game
+
+    db-game:
+        build:
+            context: ./docker/db
+        container_name: db-game
+        networks:
+            - backend
+        ports:
+            - "3306:3306"
+        environment:
+            MYSQL_DATABASE: project
+            MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+        volumes:
+            - ./docker/db/data:/var/lib/mysql
+
+    adminer-game:
+        image: adminer
+        container_name: adminer-game
+        environment:
+            ADMINER_DEFAULT_SERVER: db-game
+        networks:
+            - backend
+        ports:
+            - 8088:8080
+
+networks:
+    backend:
+        driver: bridge
